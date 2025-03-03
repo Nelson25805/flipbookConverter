@@ -90,6 +90,7 @@ def create_html(html_file, image_files, online_host=""):
       align-items: center;
       overflow: hidden;
       position: relative;
+      padding-left: 30px;
     }}
     /* The flipbook itself is sized dynamically via JS */
     #flipbook {{
