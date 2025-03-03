@@ -73,40 +73,48 @@ def create_html(html_file, image_files, online_host=""):
   <style>
     body {{
       background: #ccc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      padding: 0;
+      display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }}
+    /* Flipbook container takes most of the viewport */
     #flipbook-container {{
-      width: 800px;
-      height: 600px;
+      width: 90vw;
+      height: 80vh;
       overflow: hidden;
       position: relative;
+      margin-bottom: 20px;
     }}
+    /* The flipbook itself will be sized dynamically */
     #flipbook {{
-      width: 800px;
-      height: 600px;
+      margin: 0 auto;
     }}
     #flipbook .page {{
-      width: 400px;
-      height: 600px;
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       background-color: white;
-      border: 1px solid black;
+      border: 1px solid #999;
     }}
+    /* Controls container positioned below the flipbook */
     .controls {{
-      margin-top: 20px;
+      text-align: center;
+      font-family: Arial, sans-serif;
     }}
-    button {{
+    .controls button {{
       padding: 10px 20px;
       margin: 5px;
       font-size: 16px;
       cursor: pointer;
+    }}
+    .controls #pageInfo {{
+      display: inline-block;
+      margin: 0 20px;
+      font-size: 18px;
+      vertical-align: middle;
     }}
   </style>
   <!-- jQuery and turn.js from CDN -->
@@ -121,19 +129,43 @@ def create_html(html_file, image_files, online_host=""):
   </div>
   <div class="controls">
     <button onclick="$('#flipbook').turn('previous')">Previous</button>
+    <div id="pageInfo"></div>
     <button onclick="$('#flipbook').turn('next')">Next</button>
   </div>
-    <script>
+  <script>
   $(document).ready(function() {{
     var currentDisplay = null;
     var resizeTimer;
-    // Store the original HTML of the flipbook so we can rebuild it.
+    // Store the original flipbook HTML to rebuild when needed.
     var originalFlipbookHTML = $("#flipbook").html();
 
+    // Calculate flipbook dimensions: 90% of viewport width and 80% of viewport height.
+    function getFlipbookDimensions() {{
+      var width = Math.floor(window.innerWidth * 0.9);
+      var height = Math.floor(window.innerHeight * 0.8);
+      console.log("Calculated dimensions: width = " + width + ", height = " + height);
+      return {{ width: width, height: height }};
+    }}
+
+    // Check orientation: return "single" (portrait) or "double" (landscape).
     function checkOrientation() {{
       var mode = window.matchMedia("(orientation: portrait)").matches ? "single" : "double";
       console.log("Orientation check: " + mode);
       return mode;
+    }}
+
+    // Update page info text.
+    function updatePageInfo() {{
+      var total = $("#flipbook").turn("pages");
+      var view = $("#flipbook").turn("view");
+      var infoText = "";
+      if(currentDisplay === "double") {{
+        infoText = "Pages: " + view.join(" and ") + " of " + total;
+      }} else {{
+        infoText = "Page: " + view[0] + " of " + total;
+      }}
+      $("#pageInfo").text(infoText);
+      console.log("Updated page info: " + infoText);
     }}
 
     function logDebugInfo() {{
@@ -147,9 +179,10 @@ def create_html(html_file, image_files, online_host=""):
 
     function initFlipbook(displayType) {{
       currentDisplay = displayType;
+      var dims = getFlipbookDimensions();
       $("#flipbook").turn({{
-        width: 800,
-        height: 600,
+        width: dims.width,
+        height: dims.height,
         autoCenter: true,
         display: displayType,
         elevation: 50,
@@ -158,11 +191,13 @@ def create_html(html_file, image_files, online_host=""):
           turned: function(event, page) {{
             console.log("Turned to page: " + page);
             logDebugInfo();
+            updatePageInfo();
           }}
         }}
       }});
       console.log("Initialized flipbook in " + displayType + " mode.");
       logDebugInfo();
+      updatePageInfo();
     }}
 
     function reinitFlipbook(newDisplay) {{
@@ -185,7 +220,6 @@ def create_html(html_file, image_files, online_host=""):
         }}
         $("#flipbook").turn("page", currentPage);
         console.log("Restored to page: " + currentPage);
-        logDebugInfo();
       }}, 300);
     }}
 
@@ -197,26 +231,24 @@ def create_html(html_file, image_files, online_host=""):
       console.log("Handle resize: new display: " + newDisplay + ", current display: " + currentDisplay);
       if (newDisplay !== currentDisplay) {{
         reinitFlipbook(newDisplay);
+      }} else {{
+        // Even if mode hasn't changed, update dimensions.
+        var dims = getFlipbookDimensions();
+        $("#flipbook").turn("size", dims.width, dims.height);
+        updatePageInfo();
       }}
     }}
 
-    // Listen for both resize and orientation changes.
     $(window).on("resize orientationchange", function() {{
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(handleResize, 300);
     }});
-
-    // Debug: Log the inline style for each page.
-    $("#flipbook .page").each(function(index) {{
-      console.log("Page " + (index + 1) + " style:", $(this).attr("style"));
-    }});
   }});
   </script>
-
-
 </body>
 </html>
 """
+
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
 
