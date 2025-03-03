@@ -77,32 +77,30 @@ def create_html(html_file, image_files, online_host=""):
       padding: 0;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      min-height: 100vh;
+      justify-content: space-between;
+      font-family: Arial, sans-serif;
     }}
-    /* Flipbook container takes most of the viewport */
+    /* Flipbook container takes most available vertical space */
     #flipbook-container {{
       width: 90vw;
-      height: 80vh;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
       position: relative;
-      margin-bottom: 20px;
     }}
-    /* The flipbook itself will be sized dynamically */
+    /* The flipbook itself is sized dynamically via JS */
     #flipbook {{
-      margin: 0 auto;
+      /* No fixed height or width here; dimensions come from getFlipbookDimensions() */
     }}
-    #flipbook .page {{
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-color: white;
-      border: 1px solid #999;
-    }}
-    /* Controls container positioned below the flipbook */
+    /* Controls container anchored at the bottom */
     .controls {{
+      width: 100%;
       text-align: center;
-      font-family: Arial, sans-serif;
+      padding: 10px 0;
+      background: rgba(255, 255, 255, 0.8);
     }}
     .controls button {{
       padding: 10px 20px;
@@ -115,6 +113,14 @@ def create_html(html_file, image_files, online_host=""):
       margin: 0 20px;
       font-size: 18px;
       vertical-align: middle;
+    }}
+    /* Adjust page styling for flipbook images */
+    #flipbook .page {{
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: white;
+      border: 1px solid #999;
     }}
   </style>
   <!-- jQuery and turn.js from CDN -->
@@ -139,22 +145,23 @@ def create_html(html_file, image_files, online_host=""):
     // Store the original flipbook HTML to rebuild when needed.
     var originalFlipbookHTML = $("#flipbook").html();
 
-    // Calculate flipbook dimensions: 90% of viewport width and 80% of viewport height.
+    // Calculate flipbook dimensions: 90% of viewport width and (remaining) height from flex.
     function getFlipbookDimensions() {{
+      // We'll use 90% of the viewport width.
       var width = Math.floor(window.innerWidth * 0.9);
+      // For height, we can use the available space (we're not setting a fixed height, since the container is flex-based).
+      // However, for turn.js we need a numeric value. Let's use 80% of viewport height as a starting point.
       var height = Math.floor(window.innerHeight * 0.8);
       console.log("Calculated dimensions: width = " + width + ", height = " + height);
       return {{ width: width, height: height }};
     }}
 
-    // Check orientation: return "single" (portrait) or "double" (landscape).
     function checkOrientation() {{
       var mode = window.matchMedia("(orientation: portrait)").matches ? "single" : "double";
       console.log("Orientation check: " + mode);
       return mode;
     }}
 
-    // Update page info text.
     function updatePageInfo() {{
       var total = $("#flipbook").turn("pages");
       var view = $("#flipbook").turn("view");
@@ -248,6 +255,7 @@ def create_html(html_file, image_files, online_host=""):
 </body>
 </html>
 """
+
 
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
