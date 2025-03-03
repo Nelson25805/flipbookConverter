@@ -123,58 +123,97 @@ def create_html(html_file, image_files, online_host=""):
     <button onclick="$('#flipbook').turn('previous')">Previous</button>
     <button onclick="$('#flipbook').turn('next')">Next</button>
   </div>
-  <script>
-    $(document).ready(function() {{
-      var currentDisplay = null;
-      
-      // Determine the display mode based on orientation.
-      function checkOrientation() {{
-        return window.matchMedia("(orientation: portrait)").matches ? "single" : "double";
-      }}
+    <script>
+  $(document).ready(function() {{
+    var currentDisplay = null;
+    var resizeTimer;
+    // Store the original HTML of the flipbook so we can rebuild it.
+    var originalFlipbookHTML = $("#flipbook").html();
 
-      // Initialize the flipbook.
-      function initFlipbook(displayType) {{
-        currentDisplay = displayType;
-        $("#flipbook").turn({{
-          width: 800,
-          height: 600,
-          autoCenter: true,
-          display: displayType,
-          elevation: 50,
-          gradients: true,
-          when: {{
-            turned: function(event, page) {{
-              console.log("Current page: " + page);
-            }}
+    function checkOrientation() {{
+      var mode = window.matchMedia("(orientation: portrait)").matches ? "single" : "double";
+      console.log("Orientation check: " + mode);
+      return mode;
+    }}
+
+    function logDebugInfo() {{
+      var pagesCount = $("#flipbook").turn("pages");
+      var view = $("#flipbook").turn("view");
+      console.log("Debug Info:");
+      console.log(" - Current display mode: " + currentDisplay);
+      console.log(" - Total pages: " + pagesCount);
+      console.log(" - Current view (visible pages): ", view);
+    }}
+
+    function initFlipbook(displayType) {{
+      currentDisplay = displayType;
+      $("#flipbook").turn({{
+        width: 800,
+        height: 600,
+        autoCenter: true,
+        display: displayType,
+        elevation: 50,
+        gradients: true,
+        when: {{
+          turned: function(event, page) {{
+            console.log("Turned to page: " + page);
+            logDebugInfo();
           }}
-        }});
-      }}
-
-      // Reinitialize the flipbook when display mode changes.
-      function reinitFlipbook(newDisplay) {{
-        var currentPage = $("#flipbook").turn("page");
-        $("#flipbook").turn("destroy");
-        initFlipbook(newDisplay);
-        $("#flipbook").turn("page", currentPage);
-      }}
-
-      // Initial setup.
-      initFlipbook(checkOrientation());
-
-      // Listen for window resize/orientation change.
-      $(window).on("resize", function() {{
-        var newDisplay = checkOrientation();
-        if(newDisplay !== currentDisplay) {{
-          reinitFlipbook(newDisplay);
         }}
       }});
+      console.log("Initialized flipbook in " + displayType + " mode.");
+      logDebugInfo();
+    }}
 
-      // Debug: Log the inline style for each page.
-      $("#flipbook .page").each(function(index) {{
-        console.log("Page " + (index + 1) + " style:", $(this).attr("style"));
-      }});
+    function reinitFlipbook(newDisplay) {{
+      var currentPage = $("#flipbook").turn("page");
+      console.log("Reinitializing flipbook. New display: " + newDisplay + ", current page: " + currentPage);
+      try {{
+        $("#flipbook").turn("destroy");
+        console.log("Destroyed current flipbook instance.");
+      }} catch (e) {{
+        console.log("Error destroying flipbook instance: " + e);
+      }}
+      // Replace the flipbook container with a fresh one using the original HTML.
+      var $oldFlipbook = $("#flipbook");
+      $oldFlipbook.replaceWith("<div id='flipbook'>" + originalFlipbookHTML + "</div>");
+      setTimeout(function() {{
+        initFlipbook(newDisplay);
+        var totalPages = $("#flipbook").turn("pages");
+        if (currentPage > totalPages) {{
+          currentPage = totalPages;
+        }}
+        $("#flipbook").turn("page", currentPage);
+        console.log("Restored to page: " + currentPage);
+        logDebugInfo();
+      }}, 300);
+    }}
+
+    // Initial setup.
+    initFlipbook(checkOrientation());
+
+    function handleResize() {{
+      var newDisplay = checkOrientation();
+      console.log("Handle resize: new display: " + newDisplay + ", current display: " + currentDisplay);
+      if (newDisplay !== currentDisplay) {{
+        reinitFlipbook(newDisplay);
+      }}
+    }}
+
+    // Listen for both resize and orientation changes.
+    $(window).on("resize orientationchange", function() {{
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 300);
     }});
+
+    // Debug: Log the inline style for each page.
+    $("#flipbook .page").each(function(index) {{
+      console.log("Page " + (index + 1) + " style:", $(this).attr("style"));
+    }});
+  }});
   </script>
+
+
 </body>
 </html>
 """
