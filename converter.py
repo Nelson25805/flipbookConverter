@@ -93,7 +93,7 @@ def create_html(html_file, image_files, online_host=""):
     }}
     /* The flipbook itself is sized dynamically via JS */
     #flipbook {{
-      /* No fixed height or width here; dimensions come from getFlipbookDimensions() */
+      margin: 0 auto;
     }}
     /* Controls container anchored at the bottom */
     .controls {{
@@ -118,7 +118,7 @@ def create_html(html_file, image_files, online_host=""):
     #flipbook .page {{
       background-size: contain;
       background-repeat: no-repeat;
-      background-position: center;
+      background-position: center center;
       background-color: white;
       border: 1px solid #999;
     }}
