@@ -1,0 +1,271 @@
+import os
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from pdf2image import convert_from_path
+
+# For DOCX conversion
+try:
+    from docx2pdf import convert as docx2pdf_convert
+except ImportError:
+    docx2pdf_convert = None
+
+# Set your poppler bin path here
+POPLER_BIN_PATH = r"C:\Users\Nelso\OneDrive\Desktop\flipbookConverter\bin"
+
+def convert_doc_to_pdf(doc_path, pdf_path):
+    if docx2pdf_convert is None:
+        messagebox.showerror("Error", "docx2pdf module is not installed. Please install it using 'pip install docx2pdf'.")
+        return False
+    try:
+        # Convert DOCX/DOC to PDF; the output PDF will be saved in the same directory as pdf_path.
+        docx2pdf_convert(doc_path, os.path.dirname(pdf_path))
+        # Sometimes the generated file name is the same as the DOC file but with .pdf extension.
+        if not os.path.exists(pdf_path):
+            base = os.path.splitext(os.path.basename(doc_path))[0]
+            possible_pdf = os.path.join(os.path.dirname(pdf_path), base + ".pdf")
+            if os.path.exists(possible_pdf):
+                os.rename(possible_pdf, pdf_path)
+        return True
+    except Exception as e:
+        messagebox.showerror("Conversion Error", f"Error converting Word to PDF: {e}")
+        return False
+
+import os
+
+def create_html(html_file, image_files, online_host=""):
+    """
+    Generates the flipbook HTML file.
+
+    Args:
+      html_file (str): Path to save the generated HTML file.
+      image_files (list): List of image file paths.
+      online_host (str): Base URL for images when hosted online (e.g., Wix/Cloudinary).
+    """
+    
+    # Ensure an even number of pages (add a blank if odd)
+    if len(image_files) % 2 != 0:
+        image_files.append("")
+
+    pages_html = ""
+    for i in range(0, len(image_files), 2):
+        # Use online host if provided, otherwise use local paths
+        if online_host:
+            left_image = f'{online_host}/page{i+1}.jpg'
+            right_image = f'{online_host}/page{i+2}.jpg'
+        else:
+            left_image = f'images/{os.path.basename(image_files[i])}'
+            right_image = f'images/{os.path.basename(image_files[i+1])}'
+        
+        # Use single quotes in CSS url() to avoid quoting issues
+        left_page = f"background-image: url('{left_image}');" if image_files[i] else "background-color: white;"
+        right_page = f"background-image: url('{right_image}');" if image_files[i+1] else "background-color: white;"
+
+        pages_html += f"""
+        <div class="page" style="{left_page}"></div>
+        <div class="page" style="{right_page}"></div>
+        """
+
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Flipbook</title>
+  <style>
+    body {{
+      background: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }}
+    #flipbook-container {{
+      width: 800px;
+      height: 600px;
+      overflow: hidden;
+      position: relative;
+    }}
+    #flipbook {{
+      width: 800px;
+      height: 600px;
+    }}
+    #flipbook .page {{
+      width: 400px;
+      height: 600px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: white;
+      border: 1px solid black;
+    }}
+    .controls {{
+      margin-top: 20px;
+    }}
+    button {{
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }}
+  </style>
+  <!-- jQuery and turn.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+</head>
+<body>
+  <div id="flipbook-container">
+    <div id="flipbook">
+      {pages_html}
+    </div>
+  </div>
+  <div class="controls">
+    <button onclick="$('#flipbook').turn('previous')">Previous</button>
+    <button onclick="$('#flipbook').turn('next')">Next</button>
+  </div>
+  <script>
+    $(document).ready(function() {{
+      var currentDisplay = null;
+      
+      // Determine the display mode based on orientation.
+      function checkOrientation() {{
+        return window.matchMedia("(orientation: portrait)").matches ? "single" : "double";
+      }}
+
+      // Initialize the flipbook.
+      function initFlipbook(displayType) {{
+        currentDisplay = displayType;
+        $("#flipbook").turn({{
+          width: 800,
+          height: 600,
+          autoCenter: true,
+          display: displayType,
+          elevation: 50,
+          gradients: true,
+          when: {{
+            turned: function(event, page) {{
+              console.log("Current page: " + page);
+            }}
+          }}
+        }});
+      }}
+
+      // Reinitialize the flipbook when display mode changes.
+      function reinitFlipbook(newDisplay) {{
+        var currentPage = $("#flipbook").turn("page");
+        $("#flipbook").turn("destroy");
+        initFlipbook(newDisplay);
+        $("#flipbook").turn("page", currentPage);
+      }}
+
+      // Initial setup.
+      initFlipbook(checkOrientation());
+
+      // Listen for window resize/orientation change.
+      $(window).on("resize", function() {{
+        var newDisplay = checkOrientation();
+        if(newDisplay !== currentDisplay) {{
+          reinitFlipbook(newDisplay);
+        }}
+      }});
+
+      // Debug: Log the inline style for each page.
+      $("#flipbook .page").each(function(index) {{
+        console.log("Page " + (index + 1) + " style:", $(this).attr("style"));
+      }});
+    }});
+  </script>
+</body>
+</html>
+"""
+    with open(html_file, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+
+
+
+
+def process_file(file_path):
+    ext = os.path.splitext(file_path)[1].lower()
+    # Determine if file is PDF or Word.
+    if ext == ".pdf":
+        pdf_path = file_path
+    elif ext in [".doc", ".docx"]:
+        pdf_path = file_path + ".pdf"
+        success = convert_doc_to_pdf(file_path, pdf_path)
+        if not success:
+            return
+    else:
+        messagebox.showerror("Error", "Unsupported file type. Please choose a PDF or Word document.")
+        return
+
+    try:
+        # Convert PDF pages to images using the specified poppler bin path.
+        images = convert_from_path(pdf_path, poppler_path=POPLER_BIN_PATH)
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to convert PDF to images: {e}")
+        return
+
+    # Ask user where to save the flipbook.
+    out_dir = filedialog.askdirectory(title="Select Output Directory")
+    if not out_dir:
+        return
+
+    # Create a subfolder for the flipbook.
+    flipbook_dir = os.path.join(out_dir, "flipbook")
+    os.makedirs(flipbook_dir, exist_ok=True)
+
+    # Create images folder inside the flipbook folder.
+    images_dir = os.path.join(flipbook_dir, "images")
+    os.makedirs(images_dir, exist_ok=True)
+
+    image_files = []
+    for i, image in enumerate(images):
+        image_file = os.path.join(images_dir, f"page{i+1}.jpg")
+        image.save(image_file, "JPEG")
+        # Use a relative path for the HTML.
+        image_files.append(f"images/page{i+1}.jpg")
+
+    # Generate the HTML file for the flipbook.
+    html_file = os.path.join(flipbook_dir, "index.html")
+    create_html(html_file, image_files)
+    messagebox.showinfo("Success", f"Flipbook created successfully at:\n{flipbook_dir}")
+
+def main():
+    # Create a simple Tkinter UI.
+    root = tk.Tk()
+    root.title("PDF/Word to Flipbook Converter")
+    root.geometry("500x200")
+
+    def browse_file():
+        file_path = filedialog.askopenfilename(
+            filetypes=[("PDF files", "*.pdf"), ("Word Documents", "*.docx *.doc")],
+            title="Select a PDF or Word Document"
+        )
+        if file_path:
+            entry.delete(0, tk.END)
+            entry.insert(0, file_path)
+
+    def convert_file():
+        file_path = entry.get()
+        if not file_path or not os.path.exists(file_path):
+            messagebox.showerror("Error", "Please select a valid file.")
+            return
+        process_file(file_path)
+
+    label = tk.Label(root, text="Select PDF or Word Document:")
+    label.pack(pady=10)
+
+    entry = tk.Entry(root, width=60)
+    entry.pack(pady=5)
+
+    browse_button = tk.Button(root, text="Browse", command=browse_file)
+    browse_button.pack(pady=5)
+
+    convert_button = tk.Button(root, text="Convert to Flipbook", command=convert_file)
+    convert_button.pack(pady=10)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
