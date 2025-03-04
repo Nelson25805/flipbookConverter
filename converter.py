@@ -71,22 +71,23 @@ def create_html(html_file, image_files, online_host=""):
   <meta charset="utf-8">
   <title>Flipbook</title>
   <style>
-    /* Set the entire body background to a wavy blue pattern */
+    /* Prevent scrolling on the entire page */
+    html, body {{
+      overflow: hidden;
+      overscroll-behavior: none;
+    }}
+
     body {{
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'><path d='M0,0 C300,50 900,0 1200,50 L1200,120 L0,120 Z' fill='%230072E3' opacity='0.5'/><path d='M0,20 C300,70 900,20 1200,70 L1200,120 L0,120 Z' fill='%2300A0FF' opacity='0.5'/></svg>") no-repeat center center;
       background-size: cover;
       margin: 0;
       padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      justify-content: space-between;
       font-family: Arial, sans-serif;
     }}
-    /* Flipbook container: no separate background so body’s pattern shows through */
+    /* Flipbook container fills the available space above the fixed footer */
     #flipbook-container {{
       width: 90vw;
-      flex: 1;
+      height: calc(100vh - 60px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -110,25 +111,40 @@ def create_html(html_file, image_files, online_host=""):
       border: 1px solid #999;
       position: absolute; /* turn.js positions pages absolutely */
     }}
-    /* Footer controls with the specified blue background */
+    /* Fixed footer controls at the bottom */
     .controls {{
-      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
       text-align: center;
       padding: 10px 0;
       background: #0072E3;
       color: #fff;
+      z-index: 1000;
     }}
     .controls button {{
-      padding: 10px 20px;
+      padding: 15px 25px;
       margin: 5px;
-      font-size: 16px;
+      font-size: 18px;
       cursor: pointer;
     }}
     .controls #pageInfo {{
       display: inline-block;
       margin: 0 20px;
-      font-size: 18px;
+      font-size: 20px;
       vertical-align: middle;
+    }}
+    /* Increase footer button sizes on mobile */
+    @media (max-width: 600px) {{
+      .controls button {{
+        padding: 20px 30px;
+        font-size: 22px;
+      }}
+      .controls {{
+        height: 80px;
+      }}
     }}
   </style>
   <!-- jQuery and turn.js from CDN -->
@@ -150,12 +166,14 @@ def create_html(html_file, image_files, online_host=""):
   $(document).ready(function() {{
     var currentDisplay = null;
     var resizeTimer;
+    var footerHeight = 60; // Default footer height; adjust via media queries if needed.
     // Store the original flipbook HTML to rebuild when needed.
     var originalFlipbookHTML = $("#flipbook").html();
 
     function getFlipbookDimensions() {{
       var width = Math.floor(window.innerWidth * 0.9);
-      var height = Math.floor(window.innerHeight * 0.8);
+      var availableHeight = window.innerHeight - footerHeight;
+      var height = Math.floor(availableHeight * 0.9);
       console.log("Calculated dimensions: width = " + width + ", height = " + height);
       return {{ width: width, height: height }};
     }}
@@ -258,14 +276,8 @@ def create_html(html_file, image_files, online_host=""):
 </html>
 """
 
-
-
-
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
-
-
-
 
 
 def process_file(file_path):
