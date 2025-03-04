@@ -71,12 +71,12 @@ def create_html(html_file, image_files, online_host=""):
   <meta charset="utf-8">
   <title>Flipbook</title>
   <style>
-    /* Prevent scrolling on the entire page */
+    /* Prevent scrolling */
     html, body {{
       overflow: hidden;
       overscroll-behavior: none;
     }}
-
+    /* Entire body with wavy blue pattern background */
     body {{
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'><path d='M0,0 C300,50 900,0 1200,50 L1200,120 L0,120 Z' fill='%230072E3' opacity='0.5'/><path d='M0,20 C300,70 900,20 1200,70 L1200,120 L0,120 Z' fill='%2300A0FF' opacity='0.5'/></svg>") no-repeat center center;
       background-size: cover;
@@ -84,7 +84,7 @@ def create_html(html_file, image_files, online_host=""):
       padding: 0;
       font-family: Arial, sans-serif;
     }}
-    /* Flipbook container fills the available space above the fixed footer */
+    /* Flipbook container fills space above the fixed footer */
     #flipbook-container {{
       width: 90vw;
       height: calc(100vh - 60px);
@@ -97,7 +97,7 @@ def create_html(html_file, image_files, online_host=""):
       background: transparent;
       padding-left: 30px;
     }}
-    /* The flipbook itself is centered */
+    /* Center the flipbook */
     #flipbook {{
       display: inline-block;
       margin: 0 auto;
@@ -139,8 +139,8 @@ def create_html(html_file, image_files, online_host=""):
     /* Increase footer button sizes on mobile */
     @media (max-width: 600px) {{
       .controls button {{
-        padding: 20px 30px;
-        font-size: 22px;
+        padding: 25px 35px;
+        font-size: 24px;
       }}
       .controls {{
         height: 80px;
@@ -166,7 +166,7 @@ def create_html(html_file, image_files, online_host=""):
   $(document).ready(function() {{
     var currentDisplay = null;
     var resizeTimer;
-    var footerHeight = 60; // Default footer height; adjust via media queries if needed.
+    var footerHeight = 60; // default footer height; adjusted via media query on mobile if needed.
     // Store the original flipbook HTML to rebuild when needed.
     var originalFlipbookHTML = $("#flipbook").html();
 
@@ -270,11 +270,42 @@ def create_html(html_file, image_files, online_host=""):
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(handleResize, 300);
     }});
+
+    // Add swipe gesture support to the flipbook container with reduced sensitivity.
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var touchEndX = 0;
+    var touchEndY = 0;
+    $("#flipbook-container").on("touchstart", function(e) {{
+      var touch = e.originalEvent.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }});
+    $("#flipbook-container").on("touchend", function(e) {{
+      var touch = e.originalEvent.changedTouches[0];
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+      var diffX = touchEndX - touchStartX;
+      var diffY = touchEndY - touchStartY;
+      // Only trigger if horizontal movement is at least 75px and more than twice the vertical movement.
+      if (Math.abs(diffX) > 75 && Math.abs(diffX) > 2 * Math.abs(diffY)) {{
+        // Only trigger if the initial touch was near the left or right edge.
+        var containerWidth = $("#flipbook-container").width();
+        if (touchStartX < 100 || touchStartX > containerWidth - 100) {{
+          if (diffX > 0) {{
+            $("#flipbook").turn("previous");
+          }} else {{
+            $("#flipbook").turn("next");
+          }}
+        }}
+      }}
+    }});
   }});
   </script>
 </body>
 </html>
 """
+
 
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
