@@ -71,8 +71,10 @@ def create_html(html_file, image_files, online_host=""):
   <meta charset="utf-8">
   <title>Flipbook</title>
   <style>
+    /* Set the entire body background to a wavy blue pattern */
     body {{
-      background: #ccc;
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'><path d='M0,0 C300,50 900,0 1200,50 L1200,120 L0,120 Z' fill='%230072E3' opacity='0.5'/><path d='M0,20 C300,70 900,20 1200,70 L1200,120 L0,120 Z' fill='%2300A0FF' opacity='0.5'/></svg>") no-repeat center center;
+      background-size: cover;
       margin: 0;
       padding: 0;
       display: flex;
@@ -81,7 +83,7 @@ def create_html(html_file, image_files, online_host=""):
       justify-content: space-between;
       font-family: Arial, sans-serif;
     }}
-    /* Flipbook container takes most available vertical space */
+    /* Flipbook container: no separate background so body’s pattern shows through */
     #flipbook-container {{
       width: 90vw;
       flex: 1;
@@ -90,18 +92,31 @@ def create_html(html_file, image_files, online_host=""):
       align-items: center;
       overflow: hidden;
       position: relative;
+      text-align: center;
+      background: transparent;
       padding-left: 30px;
     }}
-    /* The flipbook itself is sized dynamically via JS */
+    /* The flipbook itself is centered */
     #flipbook {{
+      display: inline-block;
       margin: 0 auto;
     }}
-    /* Controls container anchored at the bottom */
+    /* Page styling for flipbook images */
+    #flipbook .page {{
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-color: white;
+      border: 1px solid #999;
+      position: absolute; /* turn.js positions pages absolutely */
+    }}
+    /* Footer controls with the specified blue background */
     .controls {{
       width: 100%;
       text-align: center;
       padding: 10px 0;
-      background: rgba(255, 255, 255, 0.8);
+      background: #0072E3;
+      color: #fff;
     }}
     .controls button {{
       padding: 10px 20px;
@@ -114,14 +129,6 @@ def create_html(html_file, image_files, online_host=""):
       margin: 0 20px;
       font-size: 18px;
       vertical-align: middle;
-    }}
-    /* Adjust page styling for flipbook images */
-    #flipbook .page {{
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-color: white;
-      border: 1px solid #999;
     }}
   </style>
   <!-- jQuery and turn.js from CDN -->
@@ -146,12 +153,8 @@ def create_html(html_file, image_files, online_host=""):
     // Store the original flipbook HTML to rebuild when needed.
     var originalFlipbookHTML = $("#flipbook").html();
 
-    // Calculate flipbook dimensions: 90% of viewport width and (remaining) height from flex.
     function getFlipbookDimensions() {{
-      // We'll use 90% of the viewport width.
       var width = Math.floor(window.innerWidth * 0.9);
-      // For height, we can use the available space (we're not setting a fixed height, since the container is flex-based).
-      // However, for turn.js we need a numeric value. Let's use 80% of viewport height as a starting point.
       var height = Math.floor(window.innerHeight * 0.8);
       console.log("Calculated dimensions: width = " + width + ", height = " + height);
       return {{ width: width, height: height }};
@@ -217,7 +220,6 @@ def create_html(html_file, image_files, online_host=""):
       }} catch (e) {{
         console.log("Error destroying flipbook instance: " + e);
       }}
-      // Replace the flipbook container with a fresh one using the original HTML.
       var $oldFlipbook = $("#flipbook");
       $oldFlipbook.replaceWith("<div id='flipbook'>" + originalFlipbookHTML + "</div>");
       setTimeout(function() {{
@@ -240,7 +242,6 @@ def create_html(html_file, image_files, online_host=""):
       if (newDisplay !== currentDisplay) {{
         reinitFlipbook(newDisplay);
       }} else {{
-        // Even if mode hasn't changed, update dimensions.
         var dims = getFlipbookDimensions();
         $("#flipbook").turn("size", dims.width, dims.height);
         updatePageInfo();
@@ -256,6 +257,8 @@ def create_html(html_file, image_files, online_host=""):
 </body>
 </html>
 """
+
+
 
 
     with open(html_file, "w", encoding="utf-8") as f:
