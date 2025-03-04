@@ -35,35 +35,37 @@ import os
 def create_html(html_file, image_files, online_host=""):
     """
     Generates the flipbook HTML file.
-
+    
     Args:
       html_file (str): Path to save the generated HTML file.
       image_files (list): List of image file paths.
-      online_host (str): Base URL for images when hosted online (e.g., Wix/Cloudinary).
+      online_host (str): Base URL for images when hosted online.
     """
     
-    # Ensure an even number of pages (add a blank if odd)
-    if len(image_files) % 2 != 0:
-        image_files.append("")
-
     pages_html = ""
-    for i in range(0, len(image_files), 2):
-        # Use online host if provided, otherwise use local paths
+    i = 0
+    # Loop through the images one by one.
+    while i < len(image_files):
+        # For the left page:
         if online_host:
             left_image = f'{online_host}/page{i+1}.jpg'
-            right_image = f'{online_host}/page{i+2}.jpg'
         else:
             left_image = f'images/{os.path.basename(image_files[i])}'
-            right_image = f'images/{os.path.basename(image_files[i+1])}'
-        
-        # Use single quotes in CSS url() to avoid quoting issues
         left_page = f"background-image: url('{left_image}');" if image_files[i] else "background-color: white;"
-        right_page = f"background-image: url('{right_image}');" if image_files[i+1] else "background-color: white;"
-
         pages_html += f"""
         <div class="page" style="{left_page}"></div>
+        """
+        # For the right page, only if it exists.
+        if i + 1 < len(image_files):
+            if online_host:
+                right_image = f'{online_host}/page{i+2}.jpg'
+            else:
+                right_image = f'images/{os.path.basename(image_files[i+1])}'
+            right_page = f"background-image: url('{right_image}');" if image_files[i+1] else "background-color: white;"
+            pages_html += f"""
         <div class="page" style="{right_page}"></div>
         """
+        i += 2
 
     html_content = f"""<!DOCTYPE html>
 <html>
@@ -73,17 +75,20 @@ def create_html(html_file, image_files, online_host=""):
   <style>
     /* Prevent scrolling */
     html, body {{
+      height: 100vh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
       overscroll-behavior: none;
     }}
+
     /* Entire body with wavy blue pattern background */
     body {{
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'><path d='M0,0 C300,50 900,0 1200,50 L1200,120 L0,120 Z' fill='%230072E3' opacity='0.5'/><path d='M0,20 C300,70 900,20 1200,70 L1200,120 L0,120 Z' fill='%2300A0FF' opacity='0.5'/></svg>") no-repeat center center;
       background-size: cover;
-      margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
     }}
+
     /* Flipbook container fills space above the fixed footer */
     #flipbook-container {{
       width: 90vw;
@@ -97,11 +102,13 @@ def create_html(html_file, image_files, online_host=""):
       background: transparent;
       padding-left: 30px;
     }}
-    /* Center the flipbook */
+
+    /* The flipbook itself is centered */
     #flipbook {{
       display: inline-block;
       margin: 0 auto;
     }}
+
     /* Page styling for flipbook images */
     #flipbook .page {{
       background-size: contain;
@@ -109,8 +116,9 @@ def create_html(html_file, image_files, online_host=""):
       background-position: center center;
       background-color: white;
       border: 1px solid #999;
-      position: absolute; /* turn.js positions pages absolutely */
+      position: absolute;
     }}
+
     /* Fixed footer controls at the bottom */
     .controls {{
       position: fixed;
@@ -124,18 +132,21 @@ def create_html(html_file, image_files, online_host=""):
       color: #fff;
       z-index: 1000;
     }}
+
     .controls button {{
       padding: 15px 25px;
       margin: 5px;
       font-size: 18px;
       cursor: pointer;
     }}
+
     .controls #pageInfo {{
       display: inline-block;
       margin: 0 20px;
       font-size: 20px;
       vertical-align: middle;
     }}
+
     /* Increase footer button sizes on mobile */
     @media (max-width: 600px) {{
       .controls button {{
@@ -166,14 +177,14 @@ def create_html(html_file, image_files, online_host=""):
   $(document).ready(function() {{
     var currentDisplay = null;
     var resizeTimer;
-    var footerHeight = 60; // default footer height; adjusted via media query on mobile if needed.
-    // Store the original flipbook HTML to rebuild when needed.
+    var footerHeight = 60;
     var originalFlipbookHTML = $("#flipbook").html();
 
     function getFlipbookDimensions() {{
       var width = Math.floor(window.innerWidth * 0.9);
       var availableHeight = window.innerHeight - footerHeight;
-      var height = Math.floor(availableHeight * 0.9);
+      var mode = checkOrientation();
+      var height = mode === "double" ? Math.floor(availableHeight * 1.0) : Math.floor(availableHeight * 0.9);
       console.log("Calculated dimensions: width = " + width + ", height = " + height);
       return {{ width: width, height: height }};
     }}
@@ -251,7 +262,6 @@ def create_html(html_file, image_files, online_host=""):
       }}, 300);
     }}
 
-    // Initial setup.
     initFlipbook(checkOrientation());
 
     function handleResize() {{
@@ -270,7 +280,7 @@ def create_html(html_file, image_files, online_host=""):
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(handleResize, 300);
     }});
-
+    
     // Add swipe gesture support to the flipbook container with reduced sensitivity.
     var touchStartX = 0;
     var touchStartY = 0;
@@ -305,6 +315,7 @@ def create_html(html_file, image_files, online_host=""):
 </body>
 </html>
 """
+
 
 
     with open(html_file, "w", encoding="utf-8") as f:
