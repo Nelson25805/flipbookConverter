@@ -1,3 +1,17 @@
+'''
+This script converts PDF or Word documents into a flipbook-style HTML file with page-turning effects.
+It uses the pdf2image library to convert PDF pages to images and the turn.js library for the flipbook effect.
+The script can be run as a standalone program or imported as a module for use in other applications.
+
+Usage:
+1. Run the script and select a PDF or Word document.
+2. The script will convert the document into a flipbook-style HTML file.
+3. The HTML file can be opened in a web browser to view the flipbook.
+
+Author: Nelson McFadyen
+Last Updated: March, 04, 2025
+'''
+
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -315,8 +329,6 @@ def create_html(html_file, image_files, online_host=""):
 </body>
 </html>
 """
-
-
 
     with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
