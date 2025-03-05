@@ -384,6 +384,7 @@ def main():
     # Create a simple Tkinter UI.
     root = tk.Tk()
     root.title("PDF/Word to Flipbook Converter")
+    root.iconbitmap("Assets/projectIcon.ico")
     root.geometry("500x200")
 
     def browse_file():
