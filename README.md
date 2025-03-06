@@ -74,9 +74,16 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
+<a href="https://example.com">
+  <img src="GithubImages/projectImage.png" alt="Product Name Screen Shot" width="700" />
+</a>
+
+
 ## Explanation on program:
 [![Product Name Screen Shot][product-screenshot2]](https://example.com)
 Convert your PDF and Word documents into interactive HTML flipbooks with realistic page-turning animations.
+
+
 
 ## Computer interface example:
 [![Product Name Screen Shot][product-screenshot3]](https://example.com)
