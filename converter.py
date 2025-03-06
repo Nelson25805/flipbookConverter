@@ -12,7 +12,7 @@ Author: Nelson McFadyen
 Last Updated: March, 04, 2025
 '''
 
-import os
+import os, sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from pdf2image import convert_from_path
@@ -22,9 +22,17 @@ try:
     from docx2pdf import convert as docx2pdf_convert
 except ImportError:
     docx2pdf_convert = None
+    
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for development and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
-# Set your poppler bin path here
-POPLER_BIN_PATH = r"C:\Users\Nelso\OneDrive\Desktop\flipbookConverter\bin"
+POPLER_BIN_PATH = resource_path("bin")
 
 def convert_doc_to_pdf(doc_path, pdf_path):
     if docx2pdf_convert is None:
@@ -43,8 +51,6 @@ def convert_doc_to_pdf(doc_path, pdf_path):
     except Exception as e:
         messagebox.showerror("Conversion Error", f"Error converting Word to PDF: {e}")
         return False
-
-import os
 
 def create_html(html_file, image_files, online_host=""):
     """
@@ -384,7 +390,7 @@ def main():
     # Create a simple Tkinter UI.
     root = tk.Tk()
     root.title("PDF/Word to Flipbook Converter")
-    root.iconbitmap("Assets/projectIcon.ico")
+    root.iconbitmap(resource_path("Assets/projectIcon.ico"))
     root.geometry("500x200")
 
     def browse_file():
