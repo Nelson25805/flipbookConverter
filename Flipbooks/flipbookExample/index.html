@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Flipbook</title>
+  <style>
+    /* Prevent scrolling */
+    html, body {
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    /* Entire body with wavy blue pattern background */
+    body {
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'><path d='M0,0 C300,50 900,0 1200,50 L1200,120 L0,120 Z' fill='%230072E3' opacity='0.5'/><path d='M0,20 C300,70 900,20 1200,70 L1200,120 L0,120 Z' fill='%2300A0FF' opacity='0.5'/></svg>") no-repeat center center;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Flipbook container fills space above the fixed footer */
+    #flipbook-container {
+      width: 90vw;
+      height: calc(100vh - 60px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+      background: transparent;
+      padding-left: 30px;
+    }
+
+    /* The flipbook itself is centered */
+    #flipbook {
+      display: inline-block;
+      margin: 0 auto;
+    }
+
+    /* Page styling for flipbook images */
+    #flipbook .page {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-color: white;
+      border: 1px solid #999;
+      position: absolute;
+    }
+
+    /* Fixed footer controls at the bottom */
+    .controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      text-align: center;
+      padding: 10px 0;
+      background: #0072E3;
+      color: #fff;
+      z-index: 1000;
+    }
+
+    .controls button {
+      padding: 15px 25px;
+      margin: 5px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .controls #pageInfo {
+      display: inline-block;
+      margin: 0 20px;
+      font-size: 20px;
+      vertical-align: middle;
+    }
+
+    /* Increase footer button sizes on mobile */
+    @media (max-width: 600px) {
+      .controls button {
+        padding: 25px 35px;
+        font-size: 24px;
+      }
+      .controls {
+        height: 80px;
+      }
+    }
+  </style>
+  <!-- jQuery and turn.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+</head>
+<body>
+  <div id="flipbook-container">
+    <div id="flipbook">
+      
+        <div class="page" style="background-image: url('images/page1.jpg');"></div>
+        
+        <div class="page" style="background-image: url('images/page2.jpg');"></div>
+        
+        <div class="page" style="background-image: url('images/page3.jpg');"></div>
+        
+        <div class="page" style="background-image: url('images/page4.jpg');"></div>
+        
+    </div>
+  </div>
+  <div class="controls">
+    <button onclick="$('#flipbook').turn('previous')">Previous</button>
+    <div id="pageInfo"></div>
+    <button onclick="$('#flipbook').turn('next')">Next</button>
+  </div>
+  <script>
+  $(document).ready(function() {
+    var currentDisplay = null;
+    var resizeTimer;
+    var footerHeight = 60;
+    var originalFlipbookHTML = $("#flipbook").html();
+
+    function getFlipbookDimensions() {
+      var width = Math.floor(window.innerWidth * 0.9);
+      var availableHeight = window.innerHeight - footerHeight;
+      var mode = checkOrientation();
+      var height = mode === "double" ? Math.floor(availableHeight * 1.0) : Math.floor(availableHeight * 0.9);
+      console.log("Calculated dimensions: width = " + width + ", height = " + height);
+      return { width: width, height: height };
+    }
+
+    function checkOrientation() {
+      var mode = window.matchMedia("(orientation: portrait)").matches ? "single" : "double";
+      console.log("Orientation check: " + mode);
+      return mode;
+    }
+
+    function updatePageInfo() {
+      var total = $("#flipbook").turn("pages");
+      var view = $("#flipbook").turn("view");
+      var infoText = "";
+      if(currentDisplay === "double") {
+        infoText = "Pages: " + view.join(" and ") + " of " + total;
+      } else {
+        infoText = "Page: " + view[0] + " of " + total;
+      }
+      $("#pageInfo").text(infoText);
+      console.log("Updated page info: " + infoText);
+    }
+
+    function logDebugInfo() {
+      var pagesCount = $("#flipbook").turn("pages");
+      var view = $("#flipbook").turn("view");
+      console.log("Debug Info:");
+      console.log(" - Current display mode: " + currentDisplay);
+      console.log(" - Total pages: " + pagesCount);
+      console.log(" - Current view (visible pages): ", view);
+    }
+
+    function initFlipbook(displayType) {
+      currentDisplay = displayType;
+      var dims = getFlipbookDimensions();
+      $("#flipbook").turn({
+        width: dims.width,
+        height: dims.height,
+        autoCenter: true,
+        display: displayType,
+        elevation: 50,
+        gradients: true,
+        when: {
+          turned: function(event, page) {
+            console.log("Turned to page: " + page);
+            logDebugInfo();
+            updatePageInfo();
+          }
+        }
+      });
+      console.log("Initialized flipbook in " + displayType + " mode.");
+      logDebugInfo();
+      updatePageInfo();
+    }
+
+    function reinitFlipbook(newDisplay) {
+      var currentPage = $("#flipbook").turn("page");
+      console.log("Reinitializing flipbook. New display: " + newDisplay + ", current page: " + currentPage);
+      try {
+        $("#flipbook").turn("destroy");
+        console.log("Destroyed current flipbook instance.");
+      } catch (e) {
+        console.log("Error destroying flipbook instance: " + e);
+      }
+      var $oldFlipbook = $("#flipbook");
+      $oldFlipbook.replaceWith("<div id='flipbook'>" + originalFlipbookHTML + "</div>");
+      setTimeout(function() {
+        initFlipbook(newDisplay);
+        var totalPages = $("#flipbook").turn("pages");
+        if (currentPage > totalPages) {
+          currentPage = totalPages;
+        }
+        $("#flipbook").turn("page", currentPage);
+        console.log("Restored to page: " + currentPage);
+      }, 300);
+    }
+
+    initFlipbook(checkOrientation());
+
+    function handleResize() {
+      var newDisplay = checkOrientation();
+      console.log("Handle resize: new display: " + newDisplay + ", current display: " + currentDisplay);
+      if (newDisplay !== currentDisplay) {
+        reinitFlipbook(newDisplay);
+      } else {
+        var dims = getFlipbookDimensions();
+        $("#flipbook").turn("size", dims.width, dims.height);
+        updatePageInfo();
+      }
+    }
+
+    $(window).on("resize orientationchange", function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 300);
+    });
+    
+    // Add swipe gesture support to the flipbook container with reduced sensitivity.
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var touchEndX = 0;
+    var touchEndY = 0;
+    $("#flipbook-container").on("touchstart", function(e) {
+      var touch = e.originalEvent.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    });
+    $("#flipbook-container").on("touchend", function(e) {
+      var touch = e.originalEvent.changedTouches[0];
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+      var diffX = touchEndX - touchStartX;
+      var diffY = touchEndY - touchStartY;
+      // Only trigger if horizontal movement is at least 75px and more than twice the vertical movement.
+      if (Math.abs(diffX) > 75 && Math.abs(diffX) > 2 * Math.abs(diffY)) {
+        // Only trigger if the initial touch was near the left or right edge.
+        var containerWidth = $("#flipbook-container").width();
+        if (touchStartX < 100 || touchStartX > containerWidth - 100) {
+          if (diffX > 0) {
+            $("#flipbook").turn("previous");
+          } else {
+            $("#flipbook").turn("next");
+          }
+        }
+      }
+    });
+  });
+  </script>
+</body>
+</html>
