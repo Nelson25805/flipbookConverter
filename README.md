@@ -20,7 +20,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Nelson25805/flipbookConverter">
-    <img src="GithubImages/projectImage.png" alt="Logo" width="80" height="80">
+    <img src="GithubImages/logo.png" alt="Logo" width="200" height="200">
   </a>
 
 <h3 align="center">Flipbook Converter</h3>
@@ -58,7 +58,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
+    <!-- <li><a href="#roadmap">Roadmap</a></li> -->
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -71,19 +71,21 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Project Name Screen Shot][project-screenshot]](https://example.com)
+
+Main project interface.
 
 
 ## Explanation on program:
-[![Product Name Screen Shot][product-screenshot2]](https://example.com)
+[![Project Name Screen Shot][project-screenshot2]](https://example.com)
 Convert your PDF and Word documents into interactive HTML flipbooks with realistic page-turning animations.
 
 
 ## Computer interface example:
-[![Product Name Screen Shot][product-screenshot3]](https://example.com)
+[![Project Name Screen Shot][project-screenshot3]](https://example.com)
 
 ## Mobile interface example:
-[![Product Name Screen Shot][product-screenshot4]](https://example.com)
+[![Project Name Screen Shot][project-screenshot4]](https://example.com)
 
 It's also interactive to orient from single to double pages depending on mobile orientation.
 
@@ -150,6 +152,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 
 <!-- ROADMAP -->
+<!--
 ## Roadmap
 
 - [ ] Feature 1
@@ -160,6 +163,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 See the [open issues](https://github.com/Nelson25805/flipbookConverter/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
 
 
 
@@ -199,7 +203,7 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Nelson McFadyen - [@twitter_handle](https://twitter.com/twitter_handle) - Nelson25805@hotmail.com
+Nelson McFadyen <!-- - [@twitter_handle](https://twitter.com/twitter_handle) --> - Nelson25805@hotmail.com
 
 Project Link: [https://github.com/Nelson25805/flipbookConverter](https://github.com/Nelson25805/flipbookConverter)
 
@@ -234,10 +238,10 @@ Project Link: [https://github.com/Nelson25805/flipbookConverter](https://github.
 
 [project-Image]: GithubImages/projectImage.png
 
-[product-screenshot]: GithubImages/projectImage.png
-[product-screenshot2]: GithubImages/flipbookBeforeAfter.png
-[product-screenshot3]: GithubImages/flipbookComputerExample.gif
-[product-screenshot4]: GithubImages/flipbookMobileExample.gif
+[project-screenshot]: GithubImages/projectImage.png
+[project-screenshot2]: GithubImages/flipbookBeforeAfter.png
+[project-screenshot3]: GithubImages/flipbookComputerExample.gif
+[project-screenshot4]: GithubImages/flipbookMobileExample.gif
 
 
 [Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
