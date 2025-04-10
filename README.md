@@ -94,12 +94,16 @@ It's also interactive to orient from single to double pages depending on mobile 
 
 ### Built With
 
-* [![Python][Python]][Python-url] - Core programming language.
-* [![Tkinter][Tkinter]][Tkinter-url] – For building the graphical user interface.
-* [![JQuery][JQuery.com]][JQuery-url] - Handles dynamic interactions within the HTML flipbook.
-* **pdf2image** – Converts PDF pages into images.
-* **docx2pdf** *(optional)* – Converts Word documents into PDF format.
-* **Turn.js** – Enables interactive page-turning effects in the generated HTML.
+| Software | Description |
+|:-----:|-------------|
+| [![Python](GithubImages/pythonShield.svg)][Python-url] | Core programming language. |
+| [![Tkinter](GithubImages/tkinterShield.svg)][Tkinter-url] | For building the graphical user interface. |
+| [![jQuery](GithubImages/jQueryShield.svg)][JQuery-url] | Handles dynamic interactions within the HTML flipbook. |
+| [![pdf2image](GithubImages/pdf2imageShield.svg)][pdf2image-url] | Converts PDF pages into images. |
+| [![docx2pdf](GithubImages/docx2pdfShield.svg)][docx2pdf-url] | Converts Word documents into PDF format. *(optional)* |
+| [![Turn.js](GithubImages/turnShield.svg)][turnjs-url] | Enables interactive page-turning effects in the generated HTML. |
+
+
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -232,11 +236,15 @@ Project Link: [https://github.com/Nelson25805/flipbookConverter](https://github.
 [project-screenshot4]: GithubImages/flipbookMobileExample.gif
 
 
-[Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
-[Python-url]: https://www.python.org/downloads/
-[Tkinter]: https://img.shields.io/badge/Tkinter-8.6-green
-[Tkinter-url]: https://docs.python.org/3/library/tkinter.html
-
 
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
+
+
+[Python-url]: https://www.python.org/downloads/
+[Tkinter-url]: https://docs.python.org/3/library/tkinter.html
+[JQuery-url]: https://jquery.com
+[pdf2image-url]: https://github.com/Belval/pdf2image
+[docx2pdf-url]: https://github.com/AlJohri/docx2pdf
+[turnjs-url]: http://www.turnjs.com/
+
