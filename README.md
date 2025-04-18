@@ -230,7 +230,7 @@ Project Link: [https://github.com/Nelson25805/flipbookConverter](https://github.
 [license-shield]: https://img.shields.io/github/license/Nelson25805/flipbookConverter.svg?style=for-the-badge
 [license-url]: https://github.com/Nelson25805/flipbookConverter/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[linkedin-url]: https://www.linkedin.com/in/nelson-mcfadyen-806134133/
 
 [project-Image]: GithubImages/projectImage.png
 
