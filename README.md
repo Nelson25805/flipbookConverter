@@ -74,27 +74,7 @@
 
 Flipbook Converter is a Python application that converts your PDF and Word documents into interactive HTML flipbooks with realistic page-turning animations.
 
-
-## Examples:
-[![Project Name Screen Shot][project-screenshot2]](https://example.com)
-Document on the left, and the finished HTML flipbook on the right.
-
-
-### Computer interface example:
-[![Project Name Screen Shot][project-screenshot3]](https://example.com)
-
-HTML flipbook interface with a computer.
-
-### Mobile interface example:
-[![Project Name Screen Shot][project-screenshot4]](https://example.com)
-
-HTML flipbook interface with a mobile.
-
-It's also interactive to orient from single to double pages depending on mobile orientation.
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 ### Built With
 
@@ -150,9 +130,21 @@ To start, you have two options of using this software.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+[![Project Name Screen Shot][project-screenshot2]](https://example.com)
+Document on the left, and the finished HTML flipbook on the right.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+
+### Computer interface example:
+[![Project Name Screen Shot][project-screenshot3]](https://example.com)
+
+HTML flipbook interface with a computer.
+
+### Mobile interface example:
+[![Project Name Screen Shot][project-screenshot4]](https://example.com)
+
+HTML flipbook interface with a mobile.
+
+It's also interactive to orient from single to double pages depending on mobile orientation.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
