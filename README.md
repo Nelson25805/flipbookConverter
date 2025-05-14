@@ -72,25 +72,9 @@
 
 [![Project Name Screen Shot][project-screenshot]](https://example.com)
 
-Main project interface.
-
-
-## Explanation on program:
-[![Project Name Screen Shot][project-screenshot2]](https://example.com)
-Convert your PDF and Word documents into interactive HTML flipbooks with realistic page-turning animations.
-
-
-## Computer interface example:
-[![Project Name Screen Shot][project-screenshot3]](https://example.com)
-
-## Mobile interface example:
-[![Project Name Screen Shot][project-screenshot4]](https://example.com)
-
-It's also interactive to orient from single to double pages depending on mobile orientation.
+Flipbook Converter is a Python application that converts your PDF and Word documents into interactive HTML flipbooks with realistic page-turning animations.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 ### Built With
 
@@ -146,9 +130,21 @@ To start, you have two options of using this software.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+[![Project Name Screen Shot][project-screenshot2]](https://example.com)
+Document on the left, and the finished HTML flipbook on the right.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+
+### Computer interface example:
+[![Project Name Screen Shot][project-screenshot3]](https://example.com)
+
+HTML flipbook interface with a computer.
+
+### Mobile interface example:
+[![Project Name Screen Shot][project-screenshot4]](https://example.com)
+
+HTML flipbook interface with a mobile.
+
+It's also interactive to orient from single to double pages depending on mobile orientation.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -226,7 +222,7 @@ Project Link: [https://github.com/Nelson25805/flipbookConverter](https://github.
 [license-shield]: https://img.shields.io/github/license/Nelson25805/flipbookConverter.svg?style=for-the-badge
 [license-url]: https://github.com/Nelson25805/flipbookConverter/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[linkedin-url]: https://www.linkedin.com/in/nelson-mcfadyen-806134133/
 
 [project-Image]: GithubImages/projectImage.png
 
