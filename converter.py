@@ -39,14 +39,14 @@ def convert_doc_to_pdf(doc_path, pdf_path):
         messagebox.showerror("Error", "docx2pdf module is not installed. Please install it using 'pip install docx2pdf'.")
         return False
     try:
-        # Convert DOCX/DOC to PDF; the output PDF will be saved in the same directory as pdf_path.
         docx2pdf_convert(doc_path, os.path.dirname(pdf_path))
-        # Sometimes the generated file name is the same as the DOC file but with .pdf extension.
+        # If the exact target name didn’t appear, try renaming:
         if not os.path.exists(pdf_path):
             base = os.path.splitext(os.path.basename(doc_path))[0]
             possible_pdf = os.path.join(os.path.dirname(pdf_path), base + ".pdf")
             if os.path.exists(possible_pdf):
                 os.rename(possible_pdf, pdf_path)
+        #—at this point we know the PDF is there—
         return True
     except Exception as e:
         messagebox.showerror("Conversion Error", f"Error converting Word to PDF: {e}")
@@ -346,9 +346,10 @@ def process_file(file_path):
     if ext == ".pdf":
         pdf_path = file_path
     elif ext in [".doc", ".docx"]:
-        pdf_path = file_path + ".pdf"
-        success = convert_doc_to_pdf(file_path, pdf_path)
-        if not success:
+      # drop the Word extension, then add “.pdf”
+      pdf_path = os.path.splitext(file_path)[0] + ".pdf"
+      success = convert_doc_to_pdf(file_path, pdf_path)
+      if not success:
             return
     else:
         messagebox.showerror("Error", "Unsupported file type. Please choose a PDF or Word document.")
